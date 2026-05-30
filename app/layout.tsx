@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/Toast";
 import NextAuthProvider from "@/components/NextAuthProvider";
+import { SessionExpiredModal } from "@/components/SessionExpiredModal";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NextAuthProvider>
           <ToastProvider>
             {children}
+            <SessionExpiredModal />
           </ToastProvider>
         </NextAuthProvider>
       </body>

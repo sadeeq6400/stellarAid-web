@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { BadgeCheck, Zap, ArrowRight, Bookmark } from 'lucide-react';
+import { Zap, ArrowRight, Bookmark } from 'lucide-react';
+import { TrustBadge } from '@/components/TrustBadge';
 import { clsx } from 'clsx';
 import { useBookmarkStore } from '@/store/bookmarkStore';
 import { ShareButton } from './ShareButton';
@@ -42,12 +43,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         
         {/* Status Badges */}
         <div className="absolute top-4 left-4 flex flex-col gap-2">
-          {project.isVerified && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-background/90 backdrop-blur-md rounded-full shadow-sm">
-              <BadgeCheck className="w-4 h-4 text-primary" />
-              <span className="text-[10px] font-bold text-foreground uppercase tracking-wider">Verified</span>
-            </div>
-          )}
+          <TrustBadge
+            status={project.isVerified ? "verified" : "unverified"}
+            size="sm"
+            className="bg-background/90 backdrop-blur-md"
+          />
           {project.isUrgent && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary/90 backdrop-blur-md rounded-full shadow-sm text-secondary-foreground">
               <Zap className="w-3.5 h-3.5" />

@@ -8,9 +8,10 @@ interface ListResponse {
   meta?: { total?: number };
 }
 
-async function fetchCampaigns(page: number, limit: number, q?: string) {
+export async function fetchCampaigns(page: number, limit: number, q?: string, categories?: string[]) {
   const params: Record<string, any> = { status: 'active', page, limit };
   if (q && q.trim().length > 0) params.q = q.trim();
+  if (categories && categories.length > 0) params.categories = categories.join(',');
 
   const res = await apiClient.get<ListResponse>(`/projects`, { params });
 
@@ -22,10 +23,10 @@ async function fetchCampaigns(page: number, limit: number, q?: string) {
   return { items, total };
 }
 
-export function useCampaigns(page: number, limit: number, q?: string) {
+export function useCampaigns(page: number, limit: number, q?: string, categories?: string[]) {
   return useQuery({
-    queryKey: ["campaigns", page, limit, q ?? ""],
-    queryFn: () => fetchCampaigns(page, limit, q),
+    queryKey: ["campaigns", page, limit, q ?? "", (categories || []).slice().sort().join(',')],
+    queryFn: () => fetchCampaigns(page, limit, q, categories),
     keepPreviousData: true,
     staleTime: 1000 * 60 * 2,
   });

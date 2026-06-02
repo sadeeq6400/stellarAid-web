@@ -325,5 +325,5 @@ export default async function ProjectDetailsPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  return <ProjectDetailsClient project={project} />;
+  return <ProjectDetailsClient project={project} serverTime={new Date().toISOString()} />;
 }

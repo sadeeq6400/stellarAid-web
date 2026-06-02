@@ -33,13 +33,46 @@ import { DonorsTab } from './tabs/DonorsTab';
 
 interface ProjectDetailsClientProps {
   project: Project;
+  serverTime: string;
 }
 
 type TabKey = 'story' | 'updates' | 'milestones' | 'contract' | 'donors';
 
+type Countdown = {
+  totalSeconds: number;
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+};
+
 function toNumber(value: string | number | undefined) {
   const numeric = Number(value || 0);
   return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function getServerTimeMs(serverTime: string) {
+  const time = new Date(serverTime).getTime();
+  return Number.isFinite(time) ? time : Date.now();
+}
+
+function getCountdown(deadline: string, nowMs: number): Countdown {
+  const deadlineMs = new Date(deadline).getTime();
+  const totalSeconds = Math.max(0, Math.floor((deadlineMs - nowMs) / 1000));
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return { totalSeconds, days, hours, minutes, seconds };
+}
+
+function padTime(value: number) {
+  return String(value).padStart(2, '0');
+}
+
+function formatCountdown(countdown: Countdown): string {
+  return `${countdown.days}d ${padTime(countdown.hours)}:${padTime(countdown.minutes)}:${padTime(countdown.seconds)}`;
 }
 
 function getDaysRemaining(project: Project) {
@@ -91,12 +124,15 @@ function getUpdates(project: Project, images: GalleryImage[]): Update[] {
   ];
 }
 
-export function ProjectDetailsClient({ project }: ProjectDetailsClientProps) {
+export function ProjectDetailsClient({ project, serverTime }: ProjectDetailsClientProps) {
   const [projectState, setProjectState] = useState(project);
   const [isDonationOpen, setIsDonationOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('story');
+  const [countdown, setCountdown] = useState<Countdown | null>(() =>
+    project.deadline ? getCountdown(project.deadline, getServerTimeMs(serverTime)) : null
+  );
 
   const images = useMemo(() => getProjectImages(projectState), [projectState]);
   const updates = useMemo(() => getUpdates(projectState, images), [projectState, images]);
@@ -104,6 +140,37 @@ export function ProjectDetailsClient({ project }: ProjectDetailsClientProps) {
   const targetAmount = toNumber(projectState.targetAmount);
   const donorCount = getDonorCount(projectState);
   const daysRemaining = getDaysRemaining(projectState);
+
+  const countdownLabel = projectState.deadline
+    ? countdown
+      ? countdown.totalSeconds > 0
+        ? formatCountdown(countdown)
+        : 'Campaign Ended'
+      : typeof daysRemaining === 'number'
+      ? `${daysRemaining} days`
+      : 'Open'
+    : typeof daysRemaining === 'number'
+    ? `${daysRemaining} days`
+    : 'Open';
+
+  useEffect(() => {
+    if (!project.deadline) {
+      return;
+    }
+
+    const initialServerMs = getServerTimeMs(serverTime);
+    const startPerf = performance.now();
+
+    const tick = () => {
+      const elapsedMs = performance.now() - startPerf;
+      setCountdown(getCountdown(project.deadline!, initialServerMs + Math.round(elapsedMs)));
+    };
+
+    tick();
+    const intervalId = window.setInterval(tick, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [project.deadline, serverTime]);
 
   useEffect(() => {
     setShareUrl(window.location.href);
@@ -296,9 +363,7 @@ export function ProjectDetailsClient({ project }: ProjectDetailsClientProps) {
               <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div className="rounded-lg bg-neutral-50 p-3">
                   <CalendarDays className="h-4 w-4 text-warning-500" />
-                  <p className="mt-2 font-bold text-neutral-900">
-                    {typeof daysRemaining === 'number' ? `${daysRemaining} days` : 'Open'}
-                  </p>
+                  <p className="mt-2 font-bold text-neutral-900">{countdownLabel}</p>
                   <p className="text-xs text-neutral-500">Campaign window</p>
                 </div>
                 <div className="rounded-lg bg-neutral-50 p-3">

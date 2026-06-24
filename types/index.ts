@@ -1,3 +1,4 @@
+
 export interface Milestone {
     id: number;
     title: string;
@@ -6,3 +7,5 @@ export interface Milestone {
     progress: number;
     goal: number;
   }
+
+export type KycStatus = 'Not Started' | 'In Review' | 'Verified' | 'Rejected';

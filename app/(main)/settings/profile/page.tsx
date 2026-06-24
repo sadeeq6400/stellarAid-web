@@ -94,6 +94,25 @@ export default function ProfileSettingsPage() {
       <Card className="p-8 shadow-sm">
         <div className="space-y-8">
           
+          {/* Supported Campaigns Section */}
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Supported Campaigns</h2>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-gray-600">Make your supported campaigns public on your profile.</p>
+              <label className="flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Mock Campaign Data */}
+              <ProjectCard project={{ id: '1', title: 'Clean Water for Rural Schools', progress: 81.5, raised: 97840, goal: 120000 }} />
+              <ProjectCard project={{ id: '2', title: 'Solar Microgrid in Village X', progress: 39.5, raised: 35520, goal: 90000 }} />
+            </div>
+          </div>
+
+          <hr className="border-gray-100" />
+
           {/* Profile Image */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-4">Profile Image</label>

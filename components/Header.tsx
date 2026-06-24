@@ -188,6 +188,13 @@ export default function Header() {
             <ThemeToggle />
           </div>
 
+          {isAuthenticated && (
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm font-medium text-muted-foreground">Notifications</span>
+              <NotificationsDropdown />
+            </div>
+          )}
+
           {isAuthenticated ? (
             <div className="flex justify-center">
               <ProfileDropdown />

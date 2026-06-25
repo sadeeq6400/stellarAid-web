@@ -2,6 +2,7 @@ import React from 'react';
 import { CheckCircle2, ExternalLink, Lock, Unlock } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { Milestone, Project } from '@/types/api';
+import { MilestoneVerificationBadge } from '@/components/projects/MilestoneVerificationBadge';
 
 interface MilestonesTabProps {
   project: Project;
@@ -105,19 +106,23 @@ export function MilestonesTab({ project }: MilestonesTabProps) {
                       </div>
                     </div>
 
-                    {milestone.txHash && (
-                      <div className="mt-4 border-t border-neutral-200 pt-4">
-                        <a 
+                    <div className="mt-4 pt-4 border-t border-neutral-200 flex items-center gap-3">
+                      <MilestoneVerificationBadge
+                        status={milestone.status}
+                        txHash={milestone.txHash}
+                      />
+                      {milestone.status === 'Released' && milestone.txHash && (
+                        <a
                           href={`https://stellar.expert/explorer/public/tx/${milestone.txHash}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700"
                         >
                           <ExternalLink className="h-4 w-4" />
-                          View Smart Contract Release
+                          View Release
                         </a>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               );

@@ -1,41 +1,61 @@
-import { useToast } from "@/components/ui";
+import toast from 'react-hot-toast';
 
-let toastInstance: ReturnType<typeof useToast> | null = null;
-
-// Initialize toast instance (call this in your app root)
-export const initializeToast = (toast: ReturnType<typeof useToast>) => {
-  toastInstance = toast;
+/**
+ * Show a success toast notification
+ * @param message - The message to display
+ */
+export const toastSuccess = (message: string): void => {
+  toast.success(message, {
+    duration: 4000,
+    position: 'top-right',
+  });
 };
 
-// Helper functions for use outside React components
-export const toastSuccess = (message: string, title?: string) => {
-  if (toastInstance) {
-    toastInstance.success(message, title);
-  } else {
-    console.log('[TOAST SUCCESS]:', message, title || '');
-  }
+/**
+ * Show an error toast notification
+ * @param message - The message to display
+ */
+export const toastError = (message: string): void => {
+  toast.error(message, {
+    duration: 5000,
+    position: 'top-right',
+  });
 };
 
-export const toastError = (message: string, title?: string) => {
-  if (toastInstance) {
-    toastInstance.error(message, title);
-  } else {
-    console.error('[TOAST ERROR]:', message, title || '');
-  }
+/**
+ * Show an info toast notification
+ * @param message - The message to display
+ */
+export const toastInfo = (message: string): void => {
+  toast(message, {
+    duration: 4000,
+    position: 'top-right',
+    icon: 'ℹ️',
+  });
 };
 
-export const toastWarning = (message: string, title?: string) => {
-  if (toastInstance) {
-    toastInstance.warning(message, title);
-  } else {
-    console.warn('[TOAST WARNING]:', message, title || '');
-  }
+/**
+ * Show a loading toast notification
+ * @param message - The message to display
+ * @returns The toast ID that can be used to dismiss it
+ */
+export const toastLoading = (message: string): string => {
+  return toast.loading(message, {
+    position: 'top-right',
+  });
 };
 
-export const toastInfo = (message: string, title?: string) => {
-  if (toastInstance) {
-    toastInstance.info(message, title);
-  } else {
-    console.info('[TOAST INFO]:', message, title || '');
-  }
+/**
+ * Dismiss a specific toast by ID
+ * @param toastId - The ID of the toast to dismiss
+ */
+export const toastDismiss = (toastId: string): void => {
+  toast.dismiss(toastId);
+};
+
+/**
+ * Dismiss all currently active toasts
+ */
+export const toastDismissAll = (): void => {
+  toast.dismiss();
 };

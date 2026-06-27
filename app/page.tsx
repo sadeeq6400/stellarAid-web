@@ -1,14 +1,150 @@
-import ReactQueryProvider from "@/components/ReactQueryProvider";
-import { HeroSection } from "@/components/landing/HeroSection";
-import { FeaturedCampaignsSection } from "@/components/landing/FeaturedCampaignsSection";
+'use client';
+
+import Image from "next/image";
+import { toastSuccess, toastError, toastInfo, toastLoading, toastDismiss } from '@/utils/toast';
+import { useApiStore } from '@/store/apiStore';
+import { useState } from 'react';
 
 export default function Home() {
+  const { loading, fetchData } = useApiStore();
+  const [loadingToastId, setLoadingToastId] = useState<string | null>(null);
+
+  const handleShowSuccess = () => {
+    toastSuccess('Operation completed successfully!');
+  };
+
+  const handleShowError = () => {
+    toastError('Something went wrong! Please try again.');
+  };
+
+  const handleShowInfo = () => {
+    toastInfo('Here is some useful information for you.');
+  };
+
+  const handleShowLoading = () => {
+    const id = toastLoading('Processing your request...');
+    setLoadingToastId(id);
+  };
+
+  const handleDismissLoading = () => {
+    if (loadingToastId) {
+      toastDismiss(loadingToastId);
+      setLoadingToastId(null);
+    }
+  };
+
+  const handleApiCall = () => {
+    // This will fail to demonstrate error handling
+    fetchData('https://api.example.com/data');
+  };
+
   return (
-    <ReactQueryProvider>
-      <main className="min-h-screen">
-        <HeroSection />
-        <FeaturedCampaignsSection />
-      </main>
-    </ReactQueryProvider>
+    <main className="flex min-h-screen flex-col items-center p-24">
+      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
+        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
+          Toast Notification System Demo
+        </p>
+        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
+          <a
+            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
+            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            By{" "}
+            <Image
+              src="/vercel.svg"
+              alt="Vercel Logo"
+              className="dark:invert"
+              width={100}
+              height={24}
+              priority
+            />
+          </a>
+        </div>
+      </div>
+
+      <div className="relative z-0 flex place-items-center my-16 before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
+        <Image
+          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
+          src="/next.svg"
+          alt="Next.js Logo"
+          width={180}
+          height={37}
+          priority
+        />
+      </div>
+
+      {/* Toast Demo Section */}
+      <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-16">
+        <h2 className="text-2xl font-bold mb-6 text-center dark:text-white">Test the Toast Notification System</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+          <button
+            onClick={handleShowSuccess}
+            className="bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+          >
+            Show Success Toast
+          </button>
+          <button
+            onClick={handleShowError}
+            className="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+          >
+            Show Error Toast
+          </button>
+          <button
+            onClick={handleShowInfo}
+            className="bg-sky-500 hover:bg-sky-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+          >
+            Show Info Toast
+          </button>
+          <button
+            onClick={handleShowLoading}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+          >
+            Show Loading Toast
+          </button>
+          <button
+            onClick={handleDismissLoading}
+            className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+          >
+            Dismiss Loading
+          </button>
+          <button
+            onClick={handleApiCall}
+            disabled={loading}
+            className="bg-purple-500 hover:bg-purple-600 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+          >
+            {loading ? 'Loading...' : 'Test API Call'}
+          </button>
+        </div>
+        <div className="text-center text-gray-600 dark:text-gray-400">
+          <p>Click the buttons above to see different toast notifications in action.</p>
+          <p className="mt-2 text-sm">All toasts auto-dismiss after 4-5 seconds unless manually dismissed.</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+        <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg">
+          <h3 className="text-lg font-semibold mb-3 dark:text-white">Features Implemented</h3>
+          <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+            <li>Global <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">Toaster</code> in root layout</li>
+            <li>StellarAid theme colors for all toast types</li>
+            <li>Success, error, info, and loading toast helpers</li>
+            <li>Auto-dismiss functionality</li>
+            <li>Manual dismissal support</li>
+            <li>Consistent styling across all notifications</li>
+          </ul>
+        </div>
+        <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg">
+          <h3 className="text-lg font-semibold mb-3 dark:text-white">Files Created/Modified</h3>
+          <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+            <li><code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">utils/toast.ts</code> - Toast helpers</li>
+            <li><code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">app/layout.tsx</code> - Added Toaster</li>
+            <li><code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">store/apiStore.ts</code> - Example async thunk</li>
+            <li><code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">app/page.tsx</code> - Demo interface</li>
+          </ul>
+        </div>
+      </div>
+    </main>
   );
 }

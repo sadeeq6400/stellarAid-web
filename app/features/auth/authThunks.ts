@@ -83,3 +83,23 @@ export const getCurrentUser = createAsyncThunk(
     }
   }
 );
+
+export const fetchCurrentUser = createAsyncThunk(
+  'auth/fetchCurrentUser',
+  async (_, { dispatch }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await fetch('/api/users/me');
+      if (!response.ok) throw new Error('Failed to fetch user profile');
+      const user = await response.json();
+      dispatch(setUser(user));
+      dispatch(setError(null));
+      return user;
+    } catch (error: any) {
+      dispatch(setError(error.message));
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
